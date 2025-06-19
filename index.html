@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Attendance System</title>
+    <!-- Favicon (optional) -->
+    <link rel="icon" href="https://placehold.co/32x32/667eea/ffffff?text=AS" type="image/x-icon">
+    <!-- Google Fonts - Inter for modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <!-- Login/Signup Container -->
+    <div class="container" id="authContainer">
+        <div class="left-panel">
+            <h1>Smart Attendance</h1>
+            <p>Revolutionize classroom attendance with secure QR code technology. Quick, efficient, and tamper-proof attendance tracking for modern education.</p>
+        </div>
+       
+        <div class="right-panel">
+            <div class="form-container">
+                <!-- Login Form -->
+                <div id="loginSection">
+                    <div class="form-title">
+                        <h2>Login</h2>
+                        <p>Access your attendance system</p>
+                    </div>
+                    
+                    <div class="user-type-selector">
+                        <button class="user-type-btn active" onclick="selectUserTypeLogin('teacher')">Teacher</button>
+                        <button class="user-type-btn" onclick="selectUserTypeLogin('student')">Student</button>
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginUsername" id="loginUsernameLabel">Username</label>
+                            <input type="text" id="loginUsername" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" name="password" required>
+                        </div>
+                        <button type="submit" class="action-btn" id="loginBtn">TEACHER LOGIN</button>
+                    </form>
+                    <div id="loginMessage" class="message" style="display: none;"></div>
+                    <p class="form-link">Don't have an account? <a href="#" onclick="showSignupForm()">Sign Up</a></p>
+                </div>
+
+                <!-- Signup Form -->
+                <div id="signupSection" style="display: none;">
+                    <div class="form-title">
+                        <h2>Create Account</h2>
+                        <p>Join the Smart Attendance System</p>
+                    </div>
+                    
+                    <div class="user-type-selector">
+                        <button class="user-type-btn active" onclick="selectUserTypeSignup('teacher')">Teacher</button>
+                        <button class="user-type-btn" onclick="selectUserTypeSignup('student')">Student</button>
+                    </div>
+
+                    <form id="signupForm">
+                        <div class="form-group">
+                            <label for="signupUsername" id="signupUsernameLabel">Username</label>
+                            <input type="text" id="signupUsername" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupPassword">Password</label>
+                            <input type="password" id="signupPassword" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="action-btn">CREATE ACCOUNT</button>
+                    </form>
+                    <div id="signupMessage" class="message" style="display: none;"></div>
+                    <p class="form-link">Already have an account? <a href="#" onclick="showLoginForm()">Login</a></p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Dashboard -->
+    <div class="dashboard" id="teacherDashboard">
+        <nav class="navbar">
+            <h1>Teacher Dashboard</h1>
+            <div class="user-info">
+                <span id="teacherName">Welcome, Teacher</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </nav>
+        
+        <div class="dashboard-content">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3><span>🔄</span> QR Code Generator</h3>
+                    <div class="qr-container">
+                        <!-- Canvas for QR Code -->
+                        <canvas id="qrCanvas" class="qr-code"></canvas>
+                        <div class="timer" id="timer">Ready to generate</div>
+                        <button class="generate-btn" onclick="generateQR()">Generate New QR</button>
+                    </div>
+                    <div id="teacherMessage" class="message" style="display: none;"></div>
+                </div>
+                
+                <div class="card">
+                    <h3><span>📊</span> Today's Statistics</h3>
+                    <div style="font-size: 1.1rem; line-height: 2;">
+                        <div><strong>Total Students:</strong> <span id="totalStudents">0</span></div>
+                        <div><strong>Present:</strong> <span id="presentCount">0</span></div>
+                        <div><strong>Attendance Rate:</strong> <span id="attendanceRate">0%</span></div>
+                        <div><strong>Last Updated:</strong> <span id="lastUpdated">Never</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span>📋</span> Attendance Records - Today</h3>
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Scan Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacherAttendanceList">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #666;">No attendance records yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div class="dashboard" id="studentDashboard">
+        <nav class="navbar">
+            <h1>Student Dashboard</h1>
+            <div class="user-info">
+                <span id="studentName">Welcome, Student</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </nav>
+        
+        <div class="dashboard-content">
+            <div class="student-dashboard">
+                <div class="scanner-section">
+                    <h2><span>📱</span> QR Code Scanner</h2>
+                    <div class="camera-container">
+                        <div id="qr-reader" style="width:100%; height:100%;"></div>
+                        <!-- These placeholders are commented out as html5-qrcode will render video -->
+                        <!-- <div class="camera-placeholder">📷</div> -->
+                        <!-- <div class="scan-area"></div> -->
+                    </div>
+                    <div class="scan-instructions">
+                        Position the QR code within the pink frame or enter manually below
+                    </div>
+                    
+                    <div>
+                        <input type="text" class="manual-input" id="manualQrInput" placeholder="Or enter QR code manually">
+                        <br>
+                        <button class="scan-btn" onclick="startScanner()">📸 Start Scanner</button>
+                        <button class="scan-btn" onclick="stopScanner()">🛑 Stop Scanner</button>
+                        <button class="scan-btn" onclick="markStudentAttendance()">✅ Mark Attendance</button>
+                    </div>
+                    
+                    <div id="studentScanMessage" class="message" style="display: none;"></div>
+                </div>
+
+                <div class="student-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="studentTotalClasses">0</div>
+                        <div class="stat-label">Total Classes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="studentAttended">0</div>
+                        <div class="stat-label">Classes Attended</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="studentAttendanceRate">0%</div>
+                        <div class="stat-label">Attendance Rate</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><span>📋</span> My Attendance History</h3>
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Class Time</th>
+                                <th>Scan Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentAttendanceList">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #666;">No attendance records yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Library (QRious) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <!-- HTML5-QR Code Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <!-- Link to external JavaScript file -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
